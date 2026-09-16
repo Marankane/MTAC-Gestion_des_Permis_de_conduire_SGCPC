@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SGCPC{% endblock %} · Ministère des Transports</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+            colors: {
+              brand: {
+                50: '#FEF3EC', 100: '#FDE3D0', 200: '#FBC69F', 300: '#F8A164',
+                400: '#F27E3A', 500: '#E05206', 600: '#C24704', 700: '#9C3A05',
+                800: '#7A2F08', 900: '#5C2408',
+              },
+              ink: {
+                50: '#F8FAFC', 100: '#F1F5F9', 200: '#E2E8F0', 300: '#CBD5E1',
+                400: '#94A3B8', 500: '#64748B', 600: '#475569', 700: '#334155',
+                800: '#1E293B', 900: '#0F172A',
+              },
+            },
+            boxShadow: { soft: '0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06)' },
+          }
+        }
+      }
+    </script>
+    <style>
+        body { font-family: 'Inter', ui-sans-serif, system-ui; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        .nav-link { display:flex; align-items:center; gap:.65rem; padding:.55rem .75rem; border-radius:.6rem;
+                    font-size:.875rem; font-weight:500; color:#475569; transition: all .15s ease; }
+        .nav-link:hover { background:#F1F5F9; color:#0F172A; }
+        .nav-link.active { background:#FEF3EC; color:#C24704; font-weight:600; }
+        .nav-link svg { width:1.15rem; height:1.15rem; flex-shrink:0; }
+    </style>
+</head>
+<body class="bg-ink-50 min-h-screen antialiased text-ink-800">
+    {% if user.is_authenticated %}
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="hidden lg:flex lg:flex-col w-64 bg-white border-r border-ink-100 fixed inset-y-0 left-0">
+            <div class="h-16 flex items-center gap-3 px-5 border-b border-ink-100">
+                <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center text-white font-bold text-sm shadow-soft">
+                    SG
+                </div>
+                <div>
+                    <p class="font-bold text-ink-900 leading-tight text-sm">SGCPC</p>
+                    <p class="text-[11px] text-ink-400 leading-tight">Ministère des Transports</p>
+                </div>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+                <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-400 mb-1">Opérations</p>
+                <a href="{% url 'dossiers:liste' %}" class="nav-link {% if request.resolver_match.app_name == 'dossiers' and request.resolver_match.url_name == 'liste' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Dossiers
+                </a>
+                <a href="{% url 'dossiers:creer' %}" class="nav-link {% if request.resolver_match.url_name == 'creer' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                    Nouvelle saisie
+                </a>
+                <a href="{% url 'dossiers:tableau_verification' %}" class="nav-link {% if request.resolver_match.url_name == 'tableau_verification' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Vérification
+                </a>
+
+                <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-400 mb-1 mt-5">Commission</p>
+                <a href="{% url 'commissions:liste' %}" class="nav-link {% if request.resolver_match.app_name == 'commissions' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-4a4 4 0 11-8 0 4 4 0 018 0zm6 4a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    Sessions
+                </a>
+                <a href="{% url 'restitution:liste' %}" class="nav-link {% if request.resolver_match.app_name == 'restitution' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Restitution
+                </a>
+
+                <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-400 mb-1 mt-5">Pilotage</p>
+                <a href="{% url 'reporting_stats:dashboard' %}" class="nav-link {% if request.resolver_match.app_name == 'reporting_stats' and request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Statistiques
+                </a>
+                <a href="{% url 'reporting_stats:alertes' %}" class="nav-link {% if request.resolver_match.url_name == 'alertes' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    Alertes
+                </a>
+                {% if user.is_staff %}
+                <a href="/admin/" class="nav-link">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Administration
+                </a>
+                {% endif %}
+            </nav>
+
+            <div class="p-3 border-t border-ink-100">
+                <div class="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-ink-50">
+                    <div class="w-9 h-9 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-semibold text-sm">
+                        {{ user.first_name|default:user.username|slice:":1"|upper }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-ink-900 truncate">{{ user.get_full_name|default:user.username }}</p>
+                        <p class="text-[11px] text-ink-400 truncate">{{ user.get_role_display }}</p>
+                    </div>
+                    <a href="{% url 'comptes:deconnexion' %}" title="Déconnexion" class="text-ink-400 hover:text-brand-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile top bar -->
+        <div class="lg:hidden fixed top-0 inset-x-0 h-14 bg-white border-b border-ink-100 flex items-center justify-between px-4 z-40">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-brand-500 flex items-center justify-center text-white font-bold text-xs">SG</div>
+                <span class="font-bold text-ink-900 text-sm">SGCPC</span>
+            </div>
+            <a href="{% url 'comptes:deconnexion' %}" class="text-ink-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></a>
+        </div>
+        <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-ink-100 flex justify-around py-2 z-40">
+            <a href="{% url 'dossiers:liste' %}" class="flex flex-col items-center text-[10px] text-ink-500 gap-0.5 px-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Dossiers
+            </a>
+            <a href="{% url 'dossiers:creer' %}" class="flex flex-col items-center text-[10px] text-brand-600 gap-0.5 px-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Saisir
+            </a>
+            <a href="{% url 'commissions:liste' %}" class="flex flex-col items-center text-[10px] text-ink-500 gap-0.5 px-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-4a4 4 0 11-8 0 4 4 0 018 0zm6 4a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                Commission
+            </a>
+            <a href="{% url 'reporting_stats:dashboard' %}" class="flex flex-col items-center text-[10px] text-ink-500 gap-0.5 px-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Stats
+            </a>
+        </nav>
+
+        <!-- Main content -->
+        <div class="flex-1 lg:ml-64 pt-14 lg:pt-0 pb-16 lg:pb-0">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="mb-5 flex items-start gap-3 p-4 rounded-xl text-sm shadow-soft border
+                        {% if message.tags == 'success' %} bg-emerald-50 text-emerald-800 border-emerald-100
+                        {% elif message.tags == 'error' %} bg-red-50 text-red-800 border-red-100
+                        {% elif message.tags == 'warning' %} bg-amber-50 text-amber-800 border-amber-100
+                        {% else %} bg-blue-50 text-blue-800 border-blue-100 {% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    {% else %}
+        {% block guest_content %}{% endblock %}
+    {% endif %}
+</body>
+</html>

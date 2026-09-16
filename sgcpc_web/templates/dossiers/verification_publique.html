@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Vérification du dossier{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-white rounded-2xl shadow-soft border border-ink-100 p-8 text-center">
+    <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+    </div>
+    <h1 class="text-xl font-bold text-ink-900 mb-1">Dossier {{ dossier.numero }}</h1>
+    <p class="text-ink-400 text-sm mb-4">Vérification via QR code</p>
+    <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700">{{ dossier.get_statut_display }}</span>
+    <div class="mt-5 pt-5 border-t border-ink-50 text-left space-y-1.5">
+        <p class="text-sm text-ink-600"><span class="text-ink-400">Conducteur :</span> {{ dossier.conducteur }}</p>
+        <p class="text-sm text-ink-600"><span class="text-ink-400">Date de l'incident :</span> {{ dossier.date_incident|date:"d/m/Y H:i" }}</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Décision{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-soft border border-ink-100 p-8">
+    <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+    </div>
+    <h1 class="text-xl font-bold text-ink-900 mb-1">{{ decision.get_type_decision_display }}</h1>
+    <p class="text-ink-500 mb-6 text-sm">Dossier {{ decision.audition.convocation.dossier.numero }} — {{ decision.audition.convocation.dossier.conducteur }}</p>
+
+    {% if decision.duree_suspension_mois %}
+    <div class="bg-amber-50 text-amber-800 rounded-xl px-4 py-3 text-sm mb-4">
+        Durée : {{ decision.duree_suspension_mois }} mois — fin le {{ decision.date_fin_suspension|date:"d/m/Y" }}
+    </div>
+    {% endif %}
+
+    <p class="text-sm text-ink-700 mb-1 font-medium">Motivation</p>
+    <p class="text-sm text-ink-600 mb-5">{{ decision.motivation }}</p>
+    <p class="text-xs text-ink-400 mb-6">Décidé le {{ decision.date_decision|date:"d/m/Y H:i" }} par {{ decision.decide_par }}</p>
+
+    <a href="{% url 'decisions:arrete_pdf' decision.pk %}" class="inline-flex items-center gap-2 bg-ink-800 hover:bg-ink-900 text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow-soft transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Télécharger l'arrêté PDF
+    </a>
+</div>
+{% endblock %}

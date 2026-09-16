@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Restitution{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-ink-900">Suivi et restitution</h1>
+    <p class="text-sm text-ink-500 mt-0.5">Module 5</p>
+</div>
+
+<h2 class="font-semibold text-ink-900 mb-3 flex items-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-amber-500"></span> En attente de restitution
+</h2>
+<div class="grid gap-3 mb-8">
+    {% for r in en_attente %}
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+            <p class="font-semibold text-ink-900">{{ r.decision.audition.convocation.dossier.numero }}</p>
+            <p class="text-sm text-ink-500">{{ r.decision.audition.convocation.dossier.conducteur }} — {{ r.decision.get_type_decision_display }}</p>
+        </div>
+        <form method="post" action="{% url 'restitution:restituer' r.pk %}" class="flex items-center gap-3">
+            {% csrf_token %}
+            <label class="text-xs text-ink-500 flex items-center gap-1.5">
+                <input type="checkbox" name="piece_identite" required class="rounded border-ink-300 text-brand-600"> Pièce d'identité vérifiée
+            </label>
+            <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-sm font-medium transition">Restituer</button>
+        </form>
+    </div>
+    {% empty %}
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-8 text-center text-ink-400 text-sm">Aucune restitution en attente.</div>
+    {% endfor %}
+</div>
+
+<h2 class="font-semibold text-ink-900 mb-3 flex items-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-ink-300"></span> Dossiers clôturés
+</h2>
+<div class="grid gap-2">
+    {% for r in cloturees %}
+    <div class="bg-ink-50 rounded-xl p-3.5 text-sm text-ink-500 flex justify-between">
+        <span>{{ r.decision.audition.convocation.dossier.numero }} — {{ r.decision.audition.convocation.dossier.conducteur }}</span>
+        <span>Remis le {{ r.date_remise|date:"d/m/Y" }}</span>
+    </div>
+    {% empty %}
+    <p class="text-ink-400 text-sm">Aucun dossier clôturé.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Statistiques{% endblock %}
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
+
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-ink-900">Tableau de bord</h1>
+        <p class="text-sm text-ink-500 mt-0.5">Module 7 — Pilotage et reporting</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{% url 'reporting_stats:export_csv' %}" class="inline-flex items-center gap-1.5 bg-white border border-ink-200 text-ink-700 px-3.5 py-2 rounded-xl text-sm font-medium hover:bg-ink-50 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            CSV
+        </a>
+        <a href="{% url 'reporting_stats:export_pdf' %}" class="inline-flex items-center gap-1.5 bg-white border border-ink-200 text-ink-700 px-3.5 py-2 rounded-xl text-sm font-medium hover:bg-ink-50 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Rapport PDF
+        </a>
+        <a href="{% url 'reporting_stats:alertes' %}" class="inline-flex items-center gap-1.5 bg-red-50 text-red-700 px-3.5 py-2 rounded-xl text-sm font-semibold hover:bg-red-100 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            Alertes
+        </a>
+    </div>
+</div>
+
+<!-- Chiffres clés -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-5">
+        <p class="text-xs font-medium text-ink-400 mb-1">Dossiers total</p>
+        <p class="text-3xl font-extrabold text-ink-900">{{ resume.total_dossiers }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-5">
+        <p class="text-xs font-medium text-ink-400 mb-1">En cours</p>
+        <p class="text-3xl font-extrabold text-blue-600">{{ resume.dossiers_en_cours }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-5">
+        <p class="text-xs font-medium text-ink-400 mb-1">Clôturés</p>
+        <p class="text-3xl font-extrabold text-emerald-600">{{ resume.dossiers_clotures }}</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-5">
+        <p class="text-xs font-medium text-ink-400 mb-1">Décisions rendues</p>
+        <p class="text-3xl font-extrabold text-brand-600">{{ resume.total_decisions }}</p>
+    </div>
+</div>
+
+{% if alertes.nb_dossiers_en_retard or alertes.nb_sessions_surbookees %}
+<a href="{% url 'reporting_stats:alertes' %}" class="flex items-center justify-between bg-red-50 border border-red-100 rounded-2xl p-4 mb-6 hover:bg-red-100/60 transition">
+    <p class="text-red-700 text-sm font-medium">
+        ⚠ {{ alertes.nb_dossiers_en_retard }} dossier(s) en retard · {{ alertes.nb_sessions_surbookees }} session(s) surbookée(s)
+    </p>
+    <span class="text-red-700 text-sm font-semibold">Voir le détail →</span>
+</a>
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-6">
+        <h2 class="font-semibold text-ink-900 mb-4">Confiscations par mois</h2>
+        <canvas id="chartMois" height="200"></canvas>
+    </div>
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-6">
+        <h2 class="font-semibold text-ink-900 mb-4">Répartition des décisions</h2>
+        <canvas id="chartDecisions" height="200"></canvas>
+    </div>
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-6">
+        <h2 class="font-semibold text-ink-900 mb-4">Confiscations par ville</h2>
+        <canvas id="chartVille" height="200"></canvas>
+    </div>
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-6">
+        <h2 class="font-semibold text-ink-900 mb-4">Par type d'incident</h2>
+        <canvas id="chartType" height="200"></canvas>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-6">
+        <h2 class="font-semibold text-ink-900 mb-4">Délais moyens de traitement</h2>
+        <div class="space-y-3">
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-ink-500">Saisie → Vérification</span>
+                <span class="text-sm font-bold text-ink-900">{{ delais.delai_moyen_verification_jours|default:"N/A" }} j</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-ink-500">Saisie → Décision</span>
+                <span class="text-sm font-bold text-ink-900">{{ delais.delai_moyen_decision_jours|default:"N/A" }} j</span>
+            </div>
+        </div>
+        <p class="text-xs text-ink-400 mt-4 pt-3 border-t border-ink-50">Calculé sur {{ delais.nb_dossiers_decides_mesures }} dossier(s) décidé(s)</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-6">
+        <h2 class="font-semibold text-ink-900 mb-4">Présence aux commissions</h2>
+        <div class="flex items-end gap-3">
+            <p class="text-4xl font-extrabold text-ink-900">{{ presence.taux_presence_pct }}%</p>
+            <p class="text-sm text-ink-500 mb-1">{{ presence.presents }} présent(s) / {{ presence.total_convocations }}</p>
+        </div>
+        <div class="w-full bg-ink-100 rounded-full h-2 mt-3">
+            <div class="bg-brand-500 h-2 rounded-full" style="width: {{ presence.taux_presence_pct }}%"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = '#64748B';
+
+const donneesMois = {{ par_mois_json|safe }};
+new Chart(document.getElementById('chartMois'), {
+    type: 'line',
+    data: {
+        labels: donneesMois.map(d => d.mois),
+        datasets: [{ label: 'Dossiers saisis', data: donneesMois.map(d => d.total),
+                     borderColor: '#E05206', backgroundColor: '#E0520620', tension: 0.35, fill: true, pointRadius: 3 }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } } }
+});
+
+const donneesDecisions = {{ decisions_json|safe }};
+new Chart(document.getElementById('chartDecisions'), {
+    type: 'doughnut',
+    data: {
+        labels: donneesDecisions.map(d => d.libelle),
+        datasets: [{ data: donneesDecisions.map(d => d.total),
+                     backgroundColor: ['#10B981', '#E05206', '#DC2626', '#3B82F6'], borderWidth: 0 }]
+    },
+    options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14 } } }, cutout: '65%' }
+});
+
+const donneesVille = {{ par_region_json|safe }};
+new Chart(document.getElementById('chartVille'), {
+    type: 'bar',
+    data: {
+        labels: donneesVille.map(d => d.ville),
+        datasets: [{ label: 'Dossiers', data: donneesVille.map(d => d.total), backgroundColor: '#E05206', borderRadius: 6 }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } } }
+});
+
+const donneesType = {{ par_type_json|safe }};
+new Chart(document.getElementById('chartType'), {
+    type: 'bar',
+    data: {
+        labels: donneesType.map(d => d.libelle),
+        datasets: [{ label: 'Dossiers', data: donneesType.map(d => d.total), backgroundColor: '#10B981', borderRadius: 6 }]
+    },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#F1F5F9' } }, y: { grid: { display: false } } } }
+});
+</script>
+{% endblock %}

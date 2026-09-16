@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Alertes{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-ink-900 flex items-center gap-2">
+        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        Alertes
+    </h1>
+</div>
+
+<h2 class="font-semibold text-ink-900 mb-3">Dossiers en retard (&gt; 30 jours) — {{ nb_dossiers_en_retard }}</h2>
+<div class="bg-white rounded-2xl shadow-soft border border-ink-100 overflow-hidden mb-8">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="border-b border-ink-100 text-ink-400 text-xs uppercase tracking-wider">
+                <th class="px-5 py-3.5 text-left font-semibold">N° Dossier</th>
+                <th class="px-5 py-3.5 text-left font-semibold">Conducteur</th>
+                <th class="px-5 py-3.5 text-left font-semibold">Statut</th>
+                <th class="px-5 py-3.5 text-left font-semibold">Saisi le</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-ink-50">
+            {% for dossier in dossiers_en_retard %}
+            <tr class="hover:bg-red-50/50 cursor-pointer transition-colors" onclick="window.location='{% url 'dossiers:detail' dossier.pk %}'">
+                <td class="px-5 py-3.5 font-semibold text-brand-600">{{ dossier.numero }}</td>
+                <td class="px-5 py-3.5 text-ink-700">{{ dossier.conducteur }}</td>
+                <td class="px-5 py-3.5 text-ink-500">{{ dossier.get_statut_display }}</td>
+                <td class="px-5 py-3.5 text-red-600 font-medium">{{ dossier.date_saisie|date:"d/m/Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="px-5 py-10 text-center text-ink-400">Aucun dossier en retard.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h2 class="font-semibold text-ink-900 mb-3">Sessions de commission surbookées — {{ nb_sessions_surbookees }}</h2>
+<div class="grid gap-3">
+    {% for session in sessions_surbookees %}
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-4 flex justify-between items-center">
+        <div>
+            <p class="font-medium text-ink-800">{{ session.date_session|date:"d/m/Y H:i" }} — {{ session.lieu }}</p>
+            <p class="text-sm text-red-600">{{ session.nombre_dossiers_programmes }} dossiers programmés (capacité : {{ session.capacite }})</p>
+        </div>
+        <a href="{% url 'commissions:detail_session' session.pk %}" class="text-brand-600 text-sm font-semibold hover:underline">Voir →</a>
+    </div>
+    {% empty %}
+    <p class="text-ink-400 text-sm">Aucune session surbookée.</p>
+    {% endfor %}
+</div>
+{% endblock %}

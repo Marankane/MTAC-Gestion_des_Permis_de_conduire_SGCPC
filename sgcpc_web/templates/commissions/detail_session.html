@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Session du {{ session.date_session|date:"d/m/Y" }}{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-ink-900">Session du {{ session.date_session|date:"d/m/Y H:i" }}</h1>
+    <p class="text-sm text-ink-500 mt-0.5">{{ session.lieu }} — Président : {{ session.president }}</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-6">
+        <h2 class="font-semibold text-ink-900 mb-4">Dossiers vérifiés disponibles</h2>
+        <div class="space-y-2">
+            {% for dossier in dossiers_disponibles %}
+            <div class="flex justify-between items-center border-b border-ink-50 pb-3">
+                <div>
+                    <p class="text-sm font-medium text-ink-800">{{ dossier.numero }}</p>
+                    <p class="text-xs text-ink-500">{{ dossier.conducteur }}</p>
+                </div>
+                <a href="{% url 'commissions:programmer' session.pk dossier.pk %}"
+                   class="text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition">Convoquer</a>
+            </div>
+            {% empty %}
+            <p class="text-ink-400 text-sm py-4">Aucun dossier vérifié en attente.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-soft border border-ink-100 p-6">
+        <h2 class="font-semibold text-ink-900 mb-4">Dossiers convoqués</h2>
+        <div class="space-y-3">
+            {% for conv in convocations %}
+            <div class="border border-ink-100 rounded-xl p-3.5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-ink-800">{{ conv.dossier.numero }} — {{ conv.dossier.conducteur }}</p>
+                        <p class="text-xs text-ink-500 mt-0.5">
+                            {{ conv.get_statut_display }}
+                            {% if not conv.delai_respecte %}<span class="text-red-600 ml-1">⚠ Délai 7j non respecté</span>{% endif %}
+                        </p>
+                    </div>
+                    <a href="{% url 'commissions:convocation_pdf' conv.pk %}" class="text-xs text-ink-400 hover:text-brand-600">📄 Lettre</a>
+                </div>
+                <div class="flex gap-2 mt-2.5">
+                    <a href="{% url 'commissions:marquer_presence' conv.pk 'present' %}" class="text-xs font-medium bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg">Présent</a>
+                    <a href="{% url 'commissions:marquer_presence' conv.pk 'absent' %}" class="text-xs font-medium bg-red-50 text-red-700 px-2.5 py-1 rounded-lg">Absent</a>
+                    <a href="{% url 'commissions:audition' conv.pk %}" class="text-xs font-medium bg-brand-500 hover:bg-brand-600 text-white px-2.5 py-1 rounded-lg transition">Auditionner →</a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-ink-400 text-sm py-4">Aucun dossier convoqué pour l'instant.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
