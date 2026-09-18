@@ -15,6 +15,24 @@ class PermisIntrouvableException implements Exception {
 class PermisService {
   Future<PermisVerification> verifier(
       {required String numero, required String mention}) async {
+    if (numero == DemoConfig.numeroPermis &&
+        mention == DemoConfig.mentionPermis) {
+      return PermisVerification.fromJson({
+        'code_qr': 'demo-permis-NY9028247-APN403850',
+        'nom': 'Demo',
+        'prenom': 'Utilisateur',
+        'date_naissance': '1990-01-01',
+        'lieu_naissance': 'Niamey',
+        'numero_permis': DemoConfig.numeroPermis,
+        'mention_permis': DemoConfig.mentionPermis,
+        'type_permis': 'BC',
+        'statut_permis': 'ACTIF',
+        'date_delivrance': '2024-01-15',
+        'date_expiration': '2034-01-15',
+        'date_suspension': null,
+      });
+    }
+
     final uri = Uri.parse(ApiConfig.verificationPermisEndpoint).replace(
       queryParameters: {'numero_permis': numero, 'mention_permis': mention},
     );

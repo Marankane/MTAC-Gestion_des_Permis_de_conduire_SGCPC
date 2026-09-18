@@ -21,6 +21,23 @@ class AuthService {
   /// (le token custom SGCPC embarque déjà le profil, cf. SGCPCTokenObtainPairSerializer).
   Future<Utilisateur> connexion(String username, String password) async {
     http.Response response;
+    if (username == DemoConfig.username && password == DemoConfig.password) {
+      await _tokenStorage.sauvegarder(
+        access: 'demo-access-token',
+        refresh: 'demo-refresh-token',
+      );
+      return Utilisateur(
+        id: 0,
+        username: DemoConfig.username,
+        firstName: 'Utilisateur',
+        lastName: 'Demo',
+        role: Roles.agentPolice,
+        roleDisplay: 'Agent de Police (démo hors-ligne)',
+        region: 'Niamey',
+        telephone: '',
+      );
+    }
+
     try {
       response = await http
           .post(
@@ -37,16 +54,19 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      await _tokenStorage.sauvegarder(access: data['access'], refresh: data['refresh']);
+      await _tokenStorage.sauvegarder(
+          access: data['access'], refresh: data['refresh']);
       return Utilisateur.fromJson(data['utilisateur']);
     }
     if (response.statusCode == 401) {
       throw EchecConnexionException("Identifiant ou mot de passe incorrect.");
     }
-    throw EchecConnexionException("Erreur de connexion (code ${response.statusCode}).");
+    throw EchecConnexionException(
+        "Erreur de connexion (code ${response.statusCode}).");
   }
 
   Future<void> deconnexion() => _tokenStorage.effacer();
 
-  Future<bool> estConnecte() async => (await _tokenStorage.lireAccess()) != null;
+  Future<bool> estConnecte() async =>
+      (await _tokenStorage.lireAccess()) != null;
 }

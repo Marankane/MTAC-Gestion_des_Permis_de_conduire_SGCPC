@@ -18,6 +18,13 @@ class ApiConfig {
   static const Duration timeout = Duration(seconds: 15);
 }
 
+class DemoConfig {
+  static const username = 'test1';
+  static const password = 'test1234';
+  static const numeroPermis = 'NY9028247';
+  static const mentionPermis = 'APN403850';
+}
+
 /// Rôles métier — doivent rester synchronisés avec comptes/models.py (Django).
 class Roles {
   static const agentPolice = 'AGENT_POLICE';

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../models/permis_verification.dart';
+import '../core/constants.dart';
 import '../providers/auth_provider.dart';
 import '../services/permis_service.dart';
 import 'home_screen.dart';
@@ -40,8 +41,8 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void initState() {
     super.initState();
-    _usernameCtrl.text = 'test1';
-    _passwordCtrl.text = 'test1234';
+    _usernameCtrl.text = DemoConfig.username;
+    _passwordCtrl.text = DemoConfig.password;
     _backgroundMotion = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 14),
@@ -309,8 +310,8 @@ class _VerificationSheetState extends State<_VerificationSheet> {
   @override
   void initState() {
     super.initState();
-    _numeroCtrl.text = 'NY9028247';
-    _mentionCtrl.text = 'APN403850';
+    _numeroCtrl.text = DemoConfig.numeroPermis;
+    _mentionCtrl.text = DemoConfig.mentionPermis;
   }
 
   @override

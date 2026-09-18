@@ -1,0 +1,28 @@
+# Python / Django
+.venv/
+__pycache__/
+*.py[cod]
+*.log
+.pytest_cache/
+
+# Django local data and generated files
+sgcpc_web/db.sqlite3
+sgcpc_web/media/
+sgcpc_web/staticfiles/
+
+# Flutter / Dart generated files
+sgcpc_mobile/.dart_tool/
+sgcpc_mobile/.flutter-plugins
+sgcpc_mobile/.flutter-plugins-dependencies
+sgcpc_mobile/.packages
+sgcpc_mobile/build/
+sgcpc_mobile/ios/Flutter/ephemeral/
+sgcpc_mobile/android/.gradle/
+sgcpc_mobile/android/local.properties
+
+# IDE and OS files
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
