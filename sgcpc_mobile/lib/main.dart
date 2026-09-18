@@ -12,6 +12,9 @@ import 'services/dossier_service.dart';
 import 'services/local_database.dart';
 import 'services/permis_service.dart';
 import 'services/token_storage.dart';
+import 'widgets/inactivity_guard.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(const SgcpcApp());
@@ -46,6 +49,11 @@ class SgcpcApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
+        builder: (context, child) => InactivityGuard(
+          navigatorKey: navigatorKey,
+          child: child ?? const SizedBox.shrink(),
+        ),
         title: 'SGCPC',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -53,6 +61,29 @@ class SgcpcApp extends StatelessWidget {
           colorSchemeSeed: const Color(0xFFE05206),
           scaffoldBackgroundColor: const Color(0xFFF9FAFB),
           appBarTheme: const AppBarTheme(centerTitle: false),
+          cardTheme: CardThemeData(
+            color: Color.fromRGBO(255, 255, 255, 0.30),
+            surfaceTintColor: Colors.transparent,
+            elevation: 3,
+            margin: EdgeInsets.zero,
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Color.fromRGBO(255, 255, 255, 0.30),
+            labelStyle: TextStyle(color: Colors.black87),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              borderSide: BorderSide(color: Colors.white70),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              borderSide: BorderSide(color: Colors.white70),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              borderSide: BorderSide(color: Color(0xFFE05206), width: 2),
+            ),
+          ),
         ),
         home: const _DemarrageScreen(),
       ),

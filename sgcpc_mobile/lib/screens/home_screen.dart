@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/dossier_provider.dart';
 import '../widgets/dossier_card.dart';
 import '../widgets/sync_status_banner.dart';
+import '../widgets/app_background.dart';
 import 'login_screen.dart';
 import 'nouveau_dossier_screen.dart';
 import 'dossier_detail_screen.dart';
@@ -72,7 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('SGCPC', style: TextStyle(fontSize: 18)),
+            Image.asset(
+              'assets/img/armoirie1.png',
+              height: 38,
+              fit: BoxFit.contain,
+            ),
             if (authProvider.utilisateur != null)
               Text(
                 authProvider.utilisateur!.nomComplet,
@@ -85,44 +90,47 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(icon: const Icon(Icons.logout), onPressed: _deconnexion),
         ],
       ),
-      body: Column(
-        children: [
-          SyncStatusBanner(
-            horsLigne: dossierProvider.horsLigne,
-            enAttente: dossierProvider.enAttenteSync,
-            onSynchroniserMaintenant: () => dossierProvider.synchroniser(),
-          ),
-          Expanded(
-            child: dossierProvider.chargement
-                ? const Center(child: CircularProgressIndicator())
-                : dossierProvider.dossiers.isEmpty
-                    ? _EtatVide()
-                    : RefreshIndicator(
-                        onRefresh: () => dossierProvider.charger(),
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          itemCount: dossierProvider.dossiers.length,
-                          itemBuilder: (context, index) {
-                            final dossier = dossierProvider.dossiers[index];
-                            return DossierCard(
-                              dossier: dossier,
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (_) =>
-                                        DossierDetailScreen(dossier: dossier)),
-                              ),
-                            );
-                          },
+      body: AppBackground(
+        child: Column(
+          children: [
+            SyncStatusBanner(
+              horsLigne: dossierProvider.horsLigne,
+              enAttente: dossierProvider.enAttenteSync,
+              modeDemo: dossierProvider.modeDemo,
+              onSynchroniserMaintenant: () => dossierProvider.synchroniser(),
+            ),
+            Expanded(
+              child: dossierProvider.chargement
+                  ? const Center(child: CircularProgressIndicator())
+                  : dossierProvider.dossiers.isEmpty
+                      ? _EtatVide()
+                      : RefreshIndicator(
+                          onRefresh: () => dossierProvider.charger(),
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            itemCount: dossierProvider.dossiers.length,
+                            itemBuilder: (context, index) {
+                              final dossier = dossierProvider.dossiers[index];
+                              return DossierCard(
+                                dossier: dossier,
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (_) => DossierDetailScreen(
+                                          dossier: dossier)),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: orangeNiger,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: const Text("Nouvelle saisie"),
+        label: const Text("Nouveau Dossier"),
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => const NouveauDossierScreen()),
         ),
@@ -145,7 +153,7 @@ class _EtatVide extends StatelessWidget {
             const Text("Aucun dossier pour l'instant",
                 style: TextStyle(color: Colors.grey)),
             const Text(
-              "Appuyez sur \"Nouvelle saisie\" pour enregistrer un accident.",
+              "Appuyez sur \"Nouveau Dossier\" pour enregistrer un accident.",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey, fontSize: 12),
             ),

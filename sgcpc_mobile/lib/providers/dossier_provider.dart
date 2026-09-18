@@ -23,6 +23,7 @@ class DossierProvider extends ChangeNotifier {
   /// l'agent à la connexion. Les dossiers déjà en file d'attente locale restent
   /// intacts et seront transmis dès la reconnexion (cf. DossierService).
   bool sessionExpiree = false;
+  bool modeDemo = false;
 
   StreamSubscription<bool>? _sub;
 
@@ -41,6 +42,7 @@ class DossierProvider extends ChangeNotifier {
     notifyListeners();
     dossiers = await _dossierService.listerDossiersLocaux();
     enAttenteSync = await _dossierService.compterEnAttente();
+    modeDemo = await _dossierService.estSessionDemo;
     horsLigne = !(await _connectivityService.estConnecte());
     chargement = false;
     notifyListeners();

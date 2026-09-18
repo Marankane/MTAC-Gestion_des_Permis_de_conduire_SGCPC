@@ -15,8 +15,24 @@ class PermisIntrouvableException implements Exception {
 class PermisService {
   Future<PermisVerification> verifier(
       {required String numero, required String mention}) async {
-    if (numero == DemoConfig.numeroPermis &&
-        mention == DemoConfig.mentionPermis) {
+    try {
+      final uri = Uri.parse(ApiConfig.verificationPermisEndpoint).replace(
+        queryParameters: {'numero_permis': numero, 'mention_permis': mention},
+      );
+      final response = await http.get(uri,
+          headers: {'Accept': 'application/json'}).timeout(ApiConfig.timeout);
+      if (response.statusCode == 200) {
+        return PermisVerification.fromJson(jsonDecode(response.body));
+      }
+      final detail =
+          (jsonDecode(response.body) as Map<String, dynamic>)['detail'];
+      throw PermisIntrouvableException(detail ?? 'Permis introuvable.');
+    } catch (error) {
+      if (error is PermisIntrouvableException ||
+          numero != DemoConfig.numeroPermis ||
+          mention != DemoConfig.mentionPermis) {
+        rethrow;
+      }
       return PermisVerification.fromJson({
         'code_qr': 'demo-permis-NY9028247-APN403850',
         'nom': 'Demo',
@@ -32,17 +48,5 @@ class PermisService {
         'date_suspension': null,
       });
     }
-
-    final uri = Uri.parse(ApiConfig.verificationPermisEndpoint).replace(
-      queryParameters: {'numero_permis': numero, 'mention_permis': mention},
-    );
-    final response = await http.get(uri,
-        headers: {'Accept': 'application/json'}).timeout(ApiConfig.timeout);
-    if (response.statusCode == 200) {
-      return PermisVerification.fromJson(jsonDecode(response.body));
-    }
-    final detail =
-        (jsonDecode(response.body) as Map<String, dynamic>)['detail'];
-    throw PermisIntrouvableException(detail ?? 'Permis introuvable.');
   }
 }

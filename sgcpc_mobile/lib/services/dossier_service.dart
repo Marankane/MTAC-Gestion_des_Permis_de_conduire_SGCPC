@@ -15,7 +15,8 @@ class ResultatCreationDossier {
   final Dossier dossier;
   final bool synchroniseImmediatement;
   final String message;
-  ResultatCreationDossier(this.dossier, this.synchroniseImmediatement, this.message);
+  ResultatCreationDossier(
+      this.dossier, this.synchroniseImmediatement, this.message);
 }
 
 /// Orchestre la création et la synchronisation des dossiers (Module 1).
@@ -30,6 +31,8 @@ class DossierService {
   final _uuid = const Uuid();
 
   DossierService(this._apiClient, this._localDb, this._connectivity);
+
+  Future<bool> get estSessionDemo => _apiClient.estSessionDemo;
 
   Future<ResultatCreationDossier> creerDossier(Dossier dossierSansId) async {
     final dossier = dossierSansId.copyWith();
@@ -61,7 +64,9 @@ class DossierService {
     await _localDb.enregistrer(avecLocalId);
 
     // 2. Tentative de synchronisation immédiate si le réseau est disponible.
-    if (await _connectivity.estConnecte()) {
+    // En mode démo, le token local n'est pas envoyé au serveur : on garde
+    // toujours la saisie locale sans la marquer comme une erreur réseau.
+    if (!await _apiClient.estSessionDemo && await _connectivity.estConnecte()) {
       final resultat = await _synchroniserUnDossier(avecLocalId);
       if (resultat != null) {
         return ResultatCreationDossier(
@@ -84,7 +89,8 @@ class DossierService {
   /// (avec numéro officiel) en cas de succès, null sinon.
   Future<Dossier?> _synchroniserUnDossier(Dossier dossier) async {
     try {
-      final response = await _apiClient.post(ApiConfig.dossiersEndpoint, body: dossier.toApiJson());
+      final response = await _apiClient.post(ApiConfig.dossiersEndpoint,
+          body: dossier.toApiJson());
 
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
@@ -103,7 +109,8 @@ class DossierService {
       // mais on NE PERD PAS le dossier localement.
       final echec = dossier.copyWith(
         statutSync: StatutSync.echec,
-        erreurSync: 'Erreur serveur (${response.statusCode}) : ${response.body}',
+        erreurSync:
+            'Erreur serveur (${response.statusCode}) : ${response.body}',
       );
       await _localDb.enregistrer(echec);
       return null;
@@ -120,7 +127,8 @@ class DossierService {
       // doit remonter jusqu'à l'écran pour renvoyer l'agent à la connexion.
       rethrow;
     } catch (e) {
-      final echec = dossier.copyWith(statutSync: StatutSync.echec, erreurSync: e.toString());
+      final echec = dossier.copyWith(
+          statutSync: StatutSync.echec, erreurSync: e.toString());
       await _localDb.enregistrer(echec);
       return null;
     }
@@ -129,6 +137,7 @@ class DossierService {
   /// À appeler au retour de connexion et/ou périodiquement en arrière-plan.
   /// Retourne le nombre de dossiers effectivement synchronisés.
   Future<int> synchroniserEnAttente() async {
+    if (await _apiClient.estSessionDemo) return 0;
     final enAttente = await _localDb.enAttenteDeSynchronisation();
     var reussis = 0;
     for (final dossier in enAttente) {

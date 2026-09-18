@@ -104,9 +104,6 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
           ),
-          Container(
-              color: const Color.fromRGBO(247, 122, 5, 0.205)
-                  .withValues(alpha: 0.52)),
           SafeArea(
             child: Center(
               child: SingleChildScrollView(

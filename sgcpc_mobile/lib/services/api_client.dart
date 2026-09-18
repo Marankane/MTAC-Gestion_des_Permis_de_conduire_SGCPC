@@ -14,6 +14,9 @@ class ApiClient {
   final TokenStorage _tokenStorage;
   ApiClient(this._tokenStorage);
 
+  Future<bool> get estSessionDemo async =>
+      (await _tokenStorage.lireAccess()) == 'demo-access-token';
+
   Future<Map<String, String>> _headers({bool json = true}) async {
     final access = await _tokenStorage.lireAccess();
     return {
@@ -56,7 +59,8 @@ class ApiClient {
   /// renvoyer l'utilisateur à l'écran de connexion. En l'absence totale de token
   /// (jamais connecté), ou en cas d'échec réseau pendant le refresh, la réponse
   /// 401 d'origine est simplement retournée telle quelle.
-  Future<http.Response> _avecRetry(Future<http.Response> Function() requete) async {
+  Future<http.Response> _avecRetry(
+      Future<http.Response> Function() requete) async {
     var response = await requete();
     if (response.statusCode == 401) {
       final avaitUnRefresh = await _tokenStorage.lireRefresh() != null;
@@ -85,7 +89,9 @@ class ApiClient {
   Future<http.Response> get(String url) {
     return _avecRetry(() async {
       final headers = await _headers();
-      return http.get(Uri.parse(url), headers: headers).timeout(ApiConfig.timeout);
+      return http
+          .get(Uri.parse(url), headers: headers)
+          .timeout(ApiConfig.timeout);
     });
   }
 
@@ -93,7 +99,8 @@ class ApiClient {
     return _avecRetry(() async {
       final headers = await _headers();
       return http
-          .post(Uri.parse(url), headers: headers, body: body != null ? jsonEncode(body) : null)
+          .post(Uri.parse(url),
+              headers: headers, body: body != null ? jsonEncode(body) : null)
           .timeout(ApiConfig.timeout);
     });
   }
@@ -109,7 +116,8 @@ class ApiClient {
     final request = http.MultipartRequest('POST', Uri.parse(url));
     if (access != null) request.headers['Authorization'] = 'Bearer $access';
     if (champs != null) request.fields.addAll(champs);
-    request.files.add(await http.MultipartFile.fromPath(champFichier, cheminFichier));
+    request.files
+        .add(await http.MultipartFile.fromPath(champFichier, cheminFichier));
     return request.send();
   }
 }

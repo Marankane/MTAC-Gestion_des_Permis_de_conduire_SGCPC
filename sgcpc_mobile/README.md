@@ -70,16 +70,28 @@ contrairement au backend Django, testé en direct sur un vrai serveur.
 
 ## Configuration de l'URL du serveur
 
-Par défaut, l'app pointe vers `http://10.0.2.2:8000/api/v1` (10.0.2.2 = alias
-de `localhost` de votre machine depuis un émulateur Android). À adapter :
+Par défaut, l'app pointe vers `http://172.16.20.40:8000/api/v1`, l'adresse du
+PC Django sur le Wi-Fi local. Le téléphone et le PC doivent être connectés au
+même réseau Wi-Fi. L'adresse du téléphone n'a pas besoin d'être fixe.
+
+Sur le PC, lancer Django sur toutes les interfaces réseau :
+
+```bash
+python manage.py runserver 0.0.0.0:8000
+```
+
+Si l'adresse du PC change, adapter l'URL :
 
 ```bash
 # Appareil physique sur le même réseau que le serveur Django
-flutter run --dart-define=API_BASE_URL=http://192.168.1.X:8000/api/v1
+flutter run --dart-define=API_BASE_URL=http://172.16.20.40:8000/api/v1
 
 # Serveur de production
 flutter run --dart-define=API_BASE_URL=https://sgcpc.transports.gouv.ne/api/v1
 ```
+
+En développement Android local, le trafic HTTP est autorisé par le manifeste.
+Cette autorisation doit être retirée pour une version de production en HTTPS.
 
 ## Architecture — mode hors-ligne ("offline-first")
 

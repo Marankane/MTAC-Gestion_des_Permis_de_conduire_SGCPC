@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../core/constants.dart';
 import '../models/dossier.dart';
+import '../widgets/app_background.dart';
 
 const orangeNiger = Color(0xFFE05206);
 
@@ -20,94 +21,97 @@ class DossierDetailScreen extends StatelessWidget {
         backgroundColor: orangeNiger,
         foregroundColor: Colors.white,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (!dossier.estSynchronise)
-            Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: dossier.statutSync == StatutSync.echec
-                    ? Colors.red.shade50
-                    : Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    dossier.statutSync == StatutSync.echec
-                        ? Icons.error_outline
-                        : Icons.cloud_off,
-                    color: dossier.statutSync == StatutSync.echec
-                        ? Colors.red
-                        : Colors.orange,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
+      body: AppBackground(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            if (!dossier.estSynchronise)
+              Container(
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: dossier.statutSync == StatutSync.echec
+                      ? Colors.red.shade50
+                      : Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
                       dossier.statutSync == StatutSync.echec
-                          ? "Échec de synchronisation : ${dossier.erreurSync ?? 'erreur inconnue'}"
-                          : "Ce dossier n'est pas encore transmis au serveur. Il sera envoyé "
-                              "automatiquement dès que la connexion sera disponible.",
-                      style: const TextStyle(fontSize: 13),
+                          ? Icons.error_outline
+                          : Icons.cloud_off,
+                      color: dossier.statutSync == StatutSync.echec
+                          ? Colors.red
+                          : Colors.orange,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        dossier.statutSync == StatutSync.echec
+                            ? "Échec de synchronisation : ${dossier.erreurSync ?? 'erreur inconnue'}"
+                            : "Ce dossier n'est pas encore transmis au serveur. Il sera envoyé "
+                                "automatiquement dès que la connexion sera disponible.",
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          _Carte(
-            titre: "Conducteur",
-            enfants: [
-              _Ligne("Nom complet",
-                  "${dossier.conducteur.prenom} ${dossier.conducteur.nom}"),
-              _Ligne("N° de permis", dossier.conducteur.numeroPermis),
-              _Ligne("Mention", dossier.conducteur.mentionPermis),
-              _Ligne("Type", dossier.conducteur.typePermis),
-              if (dossier.conducteur.codeQr.isNotEmpty)
-                _Ligne("Code QR", dossier.conducteur.codeQr),
-              _Ligne("Téléphone", dossier.conducteur.telephone),
-            ],
-          ),
-          _Carte(
-            titre: "Véhicule",
-            enfants: [
-              _Ligne("Véhicule",
-                  "${dossier.vehicule.marque} ${dossier.vehicule.modele}"),
-              _Ligne("Plaque", dossier.vehicule.plaque),
-              _Ligne(
-                  "Type",
-                  TypesVehicule.libelles[dossier.vehicule.typeVehicule] ??
-                      dossier.vehicule.typeVehicule),
-            ],
-          ),
-          _Carte(
-            titre: "Circonstances",
-            enfants: [
-              _Ligne(
-                  "Type d'incident",
-                  TypesIncident.libelles[dossier.typeIncident] ??
-                      dossier.typeIncident),
-              _Ligne("Date", formatDate.format(dossier.dateIncident)),
-              _Ligne("Lieu", "${dossier.ville} ${dossier.quartier}".trim()),
-              _Ligne("Blessés / Décès",
-                  "${dossier.nombreBlesses} / ${dossier.nombreDeces}"),
-              if (dossier.autresCirconstances.isNotEmpty)
-                _Ligne("Détails", dossier.autresCirconstances),
-              Wrap(spacing: 6, runSpacing: 6, children: [
-                if (dossier.alcool) const _Badge("Alcool"),
-                if (dossier.stupefiants) const _Badge("Stupéfiants"),
-                if (dossier.vitesseExcessive) const _Badge("Vitesse excessive"),
-                if (dossier.feuRouge) const _Badge("Feu rouge"),
-              ]),
-            ],
-          ),
-          if (dossier.statutServeur != null)
             _Carte(
-              titre: "Statut administratif",
-              enfants: [_Ligne("Statut", dossier.statutServeur!)],
+              titre: "Conducteur",
+              enfants: [
+                _Ligne("Nom complet",
+                    "${dossier.conducteur.prenom} ${dossier.conducteur.nom}"),
+                _Ligne("N° de permis", dossier.conducteur.numeroPermis),
+                _Ligne("Mention", dossier.conducteur.mentionPermis),
+                _Ligne("Type", dossier.conducteur.typePermis),
+                if (dossier.conducteur.codeQr.isNotEmpty)
+                  _Ligne("Code QR", dossier.conducteur.codeQr),
+                _Ligne("Téléphone", dossier.conducteur.telephone),
+              ],
             ),
-        ],
+            _Carte(
+              titre: "Véhicule",
+              enfants: [
+                _Ligne("Véhicule",
+                    "${dossier.vehicule.marque} ${dossier.vehicule.modele}"),
+                _Ligne("Plaque", dossier.vehicule.plaque),
+                _Ligne(
+                    "Type",
+                    TypesVehicule.libelles[dossier.vehicule.typeVehicule] ??
+                        dossier.vehicule.typeVehicule),
+              ],
+            ),
+            _Carte(
+              titre: "Circonstances",
+              enfants: [
+                _Ligne(
+                    "Type d'incident",
+                    TypesIncident.libelles[dossier.typeIncident] ??
+                        dossier.typeIncident),
+                _Ligne("Date", formatDate.format(dossier.dateIncident)),
+                _Ligne("Lieu", "${dossier.ville} ${dossier.quartier}".trim()),
+                _Ligne("Blessés / Décès",
+                    "${dossier.nombreBlesses} / ${dossier.nombreDeces}"),
+                if (dossier.autresCirconstances.isNotEmpty)
+                  _Ligne("Détails", dossier.autresCirconstances),
+                Wrap(spacing: 6, runSpacing: 6, children: [
+                  if (dossier.alcool) const _Badge("Alcool"),
+                  if (dossier.stupefiants) const _Badge("Stupéfiants"),
+                  if (dossier.vitesseExcessive)
+                    const _Badge("Vitesse excessive"),
+                  if (dossier.feuRouge) const _Badge("Feu rouge"),
+                ]),
+              ],
+            ),
+            if (dossier.statutServeur != null)
+              _Carte(
+                titre: "Statut administratif",
+                enfants: [_Ligne("Statut", dossier.statutServeur!)],
+              ),
+          ],
+        ),
       ),
     );
   }

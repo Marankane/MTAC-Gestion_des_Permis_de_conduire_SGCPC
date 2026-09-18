@@ -1,12 +1,11 @@
 /// Configuration de l'application — SGCPC mobile.
 class ApiConfig {
   /// URL de base de l'API Django.
-  /// En développement, l'émulateur Android utilise 10.0.2.2 pour joindre le
-  /// "localhost" de la machine hôte ; un appareil physique doit utiliser
-  /// l'adresse IP du serveur sur le réseau local ou l'URL de production.
+  /// Sur le téléphone, cette adresse est celle du PC Django sur le Wi-Fi local.
+  /// Elle peut être remplacée avec --dart-define=API_BASE_URL=....
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:8000/api/v1',
+    defaultValue: 'http://172.16.20.40:8000/api/v1',
   );
 
   static const String tokenEndpoint = '$baseUrl/auth/token/';
